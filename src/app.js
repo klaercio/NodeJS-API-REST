@@ -1,4 +1,11 @@
 import express from "express";
+import db from "./config/dbConnect.js";
+
+
+db.on("error", console.log.bind(console, 'Erro de conexão'));
+db.once("open", ()  => {
+    console.log('conexão com o banco com feita com sucesso');
+})
 
 const app = express();
 
@@ -22,11 +29,6 @@ app.get('/livros/:id', (req, res) => {
     res.json(livros[index]);
 })
 
-app.get('/livros/fav', (req, res) => {
-    let arrayFav = retornaFavoritos(livros);
-    res.json(arrayFav);
-})
-
 app.post('/livros', (req, res) => {
     livros.push(req.body);
     res.status(201).send('Livro foi cadastrado com sucesso');
@@ -47,14 +49,6 @@ app.delete('/livros/:id', (req, res) => {
 
 function buscaLivro(id) {
     return livros.findIndex(livro => livro.id == id);
-}
-
-function retornaFavoritos(livros) {
-    let fav = livros.filter((livro) =>{
-        return livro.fav == 1? livro : "";  
-    })
-
-    return fav;
 }
 
 export default app;
